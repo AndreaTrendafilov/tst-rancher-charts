@@ -15356,6 +15356,45 @@ entries:
     urls:
     - assets/jaeger/jaeger-operator-2.36.0.tgz
     version: 2.36.0
+  jellyfin:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: Jellyfin
+      catalog.cattle.io/kube-version: '>=1.16.0-0'
+      catalog.cattle.io/release-name: jellyfin
+      truecharts.org/SCALE-support: "true"
+      truecharts.org/catagories: |
+        - media
+      truecharts.org/grade: U
+    apiVersion: v2
+    appVersion: 10.8.9
+    created: "2023-04-21T00:21:11.764499234+03:00"
+    dependencies:
+    - name: common
+      repository: file://./charts/common
+      version: 11.1.2
+    description: Jellyfin is a Free Software Media System
+    digest: 798b605906a146c3b2fbee6cbec2ccb22222ddc4a3c5defc1d9d129c8e3a8fc8
+    home: https://truecharts.org/charts/stable/jellyfin
+    icon: https://truecharts.org/img/hotlink-ok/chart-icons/jellyfin.png
+    keywords:
+    - jellyfin
+    - plex
+    - emby
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - email: info@truecharts.org
+      name: TrueCharts
+      url: https://truecharts.org
+    name: jellyfin
+    sources:
+    - https://github.com/truecharts/charts/tree/master/charts/stable/jellyfin
+    - https://hub.docker.com/r/jellyfin/jellyfin
+    - https://github.com/jellyfin/jellyfin
+    type: application
+    urls:
+    - assets/jellyfin/jellyfin-13.0.12.tgz
+    version: 13.0.12
   jenkins:
   - annotations:
       artifacthub.io/category: integration-delivery
