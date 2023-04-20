@@ -1,0 +1,60 @@
+certManager:
+  enabled: true
+  installCRDs: true
+controllerManager:
+  kubeRbacProxy:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+    image:
+      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      tag: v0.13.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+    image:
+      repository: docker.io/koorinc/koor-operator
+      tag: v0.1.0
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 10m
+        memory: 128Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+webhookService:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 9443
+  type: ClusterIP
+
+# This is appeneded to values.yaml from additional-values.yaml. This is a hack to avoid getting these values overwritten by helmify
+
+koorCluster:
+  spec:
+    useAllDevices: true
+    monitoringEnabled: true
+    dashboardEnabled: true
+    toolboxEnabled: true
