@@ -1,0 +1,4 @@
+HelmRepo: https://github.com/jellyfin/jellyfin
+HelmChart: jellyfin
+Vendor: Jellyfin
+DisplayName: Jellyfin
