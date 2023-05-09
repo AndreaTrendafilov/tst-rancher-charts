@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 {{- $sasl := .Values.auth.sasl }}
-{{- $useSaslSecret := and $sasl.enabled (not (empty $sasl.secretRef )) }}
+{{- $root := deepCopy . }}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -50,11 +50,19 @@ spec:
         - -c
         - |
           set -e
+{{- $cloudStorageFlags := "" }}
+{{- if and (include "is-licensed" . | fromJson).bool .Values.storage.tieredConfig.cloud_storage_enabled }}
+  {{- $cloudStorageFlags = "-c retention.bytes=80 -c segment.bytes=40 -c redpanda.remote.read=true -c redpanda.remote.write=true"}}
+{{- end }}
+{{- $useSaslSecret := and $sasl.enabled (not (empty $sasl.secretRef )) }}
 {{- if or (not $sasl.enabled) $useSaslSecret }}
-          until rpk topic create produce.consume.test.$POD_NAME {{ include "rpk-topic-flags" . }}
+          until rpk topic create produce.consume.test.$POD_NAME {{ include "rpk-topic-flags" . }} {{ $cloudStorageFlags }}
             do sleep 2
           done
-          echo "Pandas are awesome!" | rpk topic produce produce.consume.test.$POD_NAME {{ include "rpk-topic-flags" . }}
+          {{- range $i := until 100 }}
+          echo "Pandas are awesome!" | rpk topic produce produce.consume.test.$POD_NAME {{ include "rpk-topic-flags" $ }}
+          {{- end }}
+          sleep 2
           rpk topic consume produce.consume.test.$POD_NAME -n 1 {{ include "rpk-topic-flags" . }} | grep "Pandas are awesome!"
           rpk topic delete produce.consume.test.$POD_NAME {{ include "rpk-topic-flags" . }}
 {{- end }}
@@ -87,9 +95,10 @@ spec:
 {{- end }}
 {{- if (include "tls-enabled" . | fromJson).bool }}
   {{- range $name, $cert := .Values.tls.certs }}
+    {{- $r :=  set $root "tempCert" ( dict "name" $name "cert" $cert ) }}
     - name: redpanda-{{ $name }}-cert
       secret:
         defaultMode: 0644
-        secretName: {{ template "redpanda.fullname" $ }}-{{ $name }}-cert
+        secretName: {{ template "cert-secret-name" $r }}
   {{- end }}
 {{- end -}}

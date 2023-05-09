@@ -10,6 +10,15 @@ Manual edits are supported only below '## Change Log' and should be used
 exclusively to fix incorrect entries and not to add new ones.
 
 ## Change Log
+# v1.15.87
+### Chores
+* **sysdig** [82bedb7](https://github.com/sysdiglabs/charts/commit/82bedb791cc03edd950e96fb973531add97ad47c): bump agent version to 12.14.0 ([#1075](https://github.com/sysdiglabs/charts/issues/1075))
+# v1.15.86
+### New Features
+* **sysdig** [727f9f8](https://github.com/sysdiglabs/charts/commit/727f9f836b38daf91090e843895dd4ea07126ec5): Update legacy engine NIA component with security updates ([#1065](https://github.com/sysdiglabs/charts/issues/1065))
+# v1.15.85
+### Chores
+* **sysdig, node-analyzer** [a7564db](https://github.com/sysdiglabs/charts/commit/a7564dbac2f879064e000ef780b71ebc3d4463a7): bump sysdig/vuln-runtime-scanner to v1.4.11 ([#1061](https://github.com/sysdiglabs/charts/issues/1061))
 # v1.15.84
 ### Bug Fixes
 * **agent,sysdig** [0702edd](https://github.com/sysdiglabs/charts/commit/0702eddfc46c823b8362b5f0d42e7be9d3bfe1ac): do not mount /var/lib when GKE autopilot is enabled ([#1047](https://github.com/sysdiglabs/charts/issues/1047))
