@@ -1,18 +1,18 @@
-name: YAML Lint
-
+name: 'Yamllint'
 on:
-  pull_request:
-  push:
-  
+  - pull_request
 jobs:
-  lint:
-    name: Lint
+  yamllint:
+    name: 'Yamllint'
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Install dependencies
-      run: npm install js-yaml
-    - name: Lint YAML files
-      run: |
-        npx js-yaml -t $(find . -name '*.yml' -o -name '*.yaml')
+      - name: 'Checkout'
+        uses: actions/checkout@master
+      - name: 'Yamllint'
+        uses: karancode/yamllint-github-action@master
+        with:
+          yamllint_file_or_dir: '/'
+          yamllint_strict: false
+          yamllint_comment: true
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
