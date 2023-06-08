@@ -9,7 +9,7 @@ kubeslice:
     projectnsPrefix: kubeslice
     endpoint:
     image: aveshasystems/kubeslice-controller-ent
-    tag: 0.5.0
+    tag: 1.0.0
     pullPolicy: IfNotPresent
   ovpnJob:
     image: aveshasystems/gateway-certs-generator
@@ -17,11 +17,25 @@ kubeslice:
   prometheus:
     enabled: true
     url: http://kubeslice-controller-prometheus-service:9090
+  events:
+    disabled: false
+  # license details by default mode set to auto and license set to trial - please give company-name or user-name as customerName
+  license:
+    # possible license type values ["kubeslice-trial-license"]
+    type: kubeslice-trial-license
+    # possible license mode - ["auto", "manual"]
+    mode: auto
+    # please give company-name or user-name as customerName
+    customerName: ""
 
 # Kubeslice UI settings
   ui:
     image: aveshasystems/kubeslice-ui-ent
-    tag: 0.5.0
+    tag: 1.0.0
+    pullPolicy: IfNotPresent
+  uiv2:
+    image: aveshasystems/kubeslice-ui-v2-ent
+    tag: 1.0.1
     pullPolicy: IfNotPresent
   dashboard:
     image: aveshasystems/kubeslice-kubernetes-dashboard
@@ -29,17 +43,24 @@ kubeslice:
     pullPolicy: IfNotPresent
   uiproxy:
     image: aveshasystems/kubeslice-ui-proxy
-    tag: 1.0.4
+    tag: 1.2.0
     pullPolicy: IfNotPresent
     service:
       ## For kind, set this to NodePort, elsewhere use LoadBalancer or NodePort
       ## Ref: https://kubernetes.io/docs/user-guide/services/#publishing-services---service-types
       ##
       type: LoadBalancer
+      ## if type selected to NodePort then set nodePort value if required
+      # nodePort:
   apigw:
     image: aveshasystems/kubeslice-api-gw-ent
-    tag: 1.3.5
+    tag: 1.8.2
     pullPolicy: IfNotPresent
+
+  workerinstaller:
+    image: aveshasystems/worker-installer
+    tag: 1.1.9
+    pullPolicy: Always
           
 # username & password & email values for imagePullSecrets has to provided to create a secret
 imagePullSecrets:

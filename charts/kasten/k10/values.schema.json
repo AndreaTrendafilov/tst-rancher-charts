@@ -403,6 +403,12 @@
                             "default": "",
                             "title": "Garbagecollector service container image",
                             "description": "Used for packaging RedHat Operator. Setting this flag along with global.rhMarketPlace=true overrides the default image name. This flag is only for internal purposes."
+                        },
+                        "metric-sidecar": {
+                            "type": "string",
+                            "default": "",
+                            "title": "Metric-sidecar service container image",
+                            "description": "Used for packaging RedHat Operator. Setting this flag along with global.rhMarketPlace=true overrides the default image name. This flag is only for internal purposes."
                         }
                     }
                 },
@@ -1999,6 +2005,31 @@
             "title": "Kanister pod custom annotations",
             "description": "Custom annotations added to pods managed by Kanister"
         },
+        "kanisterPodMetricSidecar": {
+            "type": "object",
+            "title": "Metric sidecar for ephemeral pods",
+            "description": "Sidecar container for gathering metrics from ephemeral pods",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Enable sidecar container",
+                    "description": "Enable sidecar container for gathering metrics from ephemeral pods"
+                },
+                "metricLifetime":{
+                    "type": "string",
+                    "default": "2m",
+                    "title": "The period we check if there are metrics which should be removed",
+                    "description": "The period we check if there are metrics which should be removed"
+                },
+                "pushGatewayInterval":{
+                    "type": "string",
+                    "default": "30s",
+                    "title": "Pushgateway metrics interval",
+                    "description": "The interval of sending metrics into the Pushgateway"
+                }
+            }
+        },
         "genericVolumeSnapshot": {
             "type": "object",
             "title": "Generic Volume Snapshot restore pods config",
@@ -2587,6 +2618,23 @@
             "default": [],
             "title": "List of applications to be excluded",
             "description": "List of applications to be excluded from the dashboard & compliance considerations"
+        },
+        "reporting": {
+            "type": "object",
+            "properties": {
+                "pdfReports": {
+                    "title": "Enable PDF reports",
+                    "description": "Enable download of PDF reports in the Dashboard",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "maxJobWaitDuration": {
+            "type": "string",
+            "default": "",
+            "title": "Maximum duration for jobs in minutes",
+            "description": "Set a maximum duration of waiting for child jobs. If the execution of the subordinate jobs exceeds this value, the parent job will be canceled. If no value is set, a default of 10 hours will be used"
         }
     }
 }

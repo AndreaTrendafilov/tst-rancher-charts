@@ -8,25 +8,30 @@
   {{- end -}}
   {{- $cnpgClusterName := $values.name -}}
   {{- $cnpgClusterLabels := $values.labels -}}
-  {{- $cnpgClusterAnnotations := $values.annotations }}
-
+  {{- $cnpgClusterAnnotations := $values.annotations -}}
+  {{- $hibernation := "off" -}}
+  {{- if or $values.hibernate $.Values.global.stopAll -}}
+    {{- $hibernation = "on" -}}
+  {{- end }}
 ---
 apiVersion: {{ include "tc.v1.common.capabilities.cnpg.cluster.apiVersion" $ }}
 kind: Cluster
 metadata:
   name: {{ $cnpgClusterName }}
-  {{- $labels := (mustMerge ($cnpgClusterLabels | default dict) (include "tc.v1.common.lib.metadata.allLabels" $ | fromYaml)) -}}
-  {{- with (include "tc.v1.common.lib.metadata.render" (dict "rootCtx" $ "labels" $labels) | trim) }}
+  {{- $labels := (mustMerge ($cnpgClusterLabels | default dict) (include "tc.v1.common.lib.metadata.allLabels" $ | fromYaml)) }}
   labels:
+    cnpg.io/reload: "on"
+  {{- with (include "tc.v1.common.lib.metadata.render" (dict "rootCtx" $ "labels" $labels) | trim) }}
     {{- . | nindent 4 }}
   {{- end }}
-  {{- $annotations := (mustMerge ($cnpgClusterAnnotations | default dict) (include "tc.v1.common.lib.metadata.allAnnotations" $ | fromYaml)) -}}
-  {{- with (include "tc.v1.common.lib.metadata.render" (dict "rootCtx" $ "annotations" $annotations) | trim) }}
+  {{- $annotations := (mustMerge ($cnpgClusterAnnotations | default dict) (include "tc.v1.common.lib.metadata.allAnnotations" $ | fromYaml)) }}
   annotations:
+    cnpg.io/hibernation: {{ $hibernation | quote }}
+  {{- with (include "tc.v1.common.lib.metadata.render" (dict "rootCtx" $ "annotations" $annotations) | trim) }}
     {{- . | nindent 4 }}
   {{- end }}
 spec:
-  instances: {{ $values.instances | default 2  }}
+  instances: {{ $values.instances | default 2 }}
 
   bootstrap:
     initdb:
@@ -64,7 +69,7 @@ spec:
 
   nodeMaintenanceWindow:
     inProgress: false
-    reusePVC: on
+    reusePVC: true
 
   postgresql:
     {{- tpl ( $values.postgresql | toYaml ) $ | nindent 4 }}

@@ -85,6 +85,9 @@ metadata:
   namespace: {{ .namespace }}
   labels:
   {{- .metaLabels | nindent 4 }}
+  {{- range $key, $value := .ingress.labels }}
+    {{- $key | nindent 4 }}: {{ $value | quote }}
+  {{- end }}
   {{- if .ingress.annotations }}
   annotations:
     {{- range $key, $value := .ingress.annotations }}
@@ -443,7 +446,6 @@ The name of the service used for the ingress controller's validation webhook
   {{- $_ := required "ingressController.konnect.runtimeGroupID is required when ingressController.konnect.enabled" $konnect.runtimeGroupID -}}
 
   {{- $_ = set $autoEnv "CONTROLLER_KONNECT_SYNC_ENABLED" true -}}
-  {{- $_ = set $autoEnv "CONTROLLER_KONNECT_LICENSING_ENABLED" true -}}
   {{- $_ = set $autoEnv "CONTROLLER_KONNECT_RUNTIME_GROUP_ID" $konnect.runtimeGroupID -}}
   {{- $_ = set $autoEnv "CONTROLLER_KONNECT_ADDRESS" (printf "https://%s" .Values.ingressController.konnect.apiHostname) -}}
 
@@ -451,6 +453,10 @@ The name of the service used for the ingress controller's validation webhook
   {{- $tlsKey := include "secretkeyref" (dict "name" $konnect.tlsClientCertSecretName "key" "tls.key") -}}
   {{- $_ = set $autoEnv "CONTROLLER_KONNECT_TLS_CLIENT_CERT" $tlsCert -}}
   {{- $_ = set $autoEnv "CONTROLLER_KONNECT_TLS_CLIENT_KEY" $tlsKey -}}
+
+  {{- if $konnect.license.enabled }}
+  {{- $_ = set $autoEnv "CONTROLLER_KONNECT_LICENSING_ENABLED" true -}}
+  {{- end }}
 {{- end }}
 
 {{/*
@@ -491,10 +497,10 @@ The name of the service used for the ingress controller's validation webhook
 
 {{- define "kong.volumes" -}}
 - name: {{ template "kong.fullname" . }}-prefix-dir
-  emptyDir: 
+  emptyDir:
     sizeLimit: {{ .Values.deployment.prefixDir.sizeLimit }}
 - name: {{ template "kong.fullname" . }}-tmp
-  emptyDir: 
+  emptyDir:
     sizeLimit: {{ .Values.deployment.tmpDir.sizeLimit }}
 {{- if and ( .Capabilities.APIVersions.Has "cert-manager.io/v1" ) .Values.certificates.enabled -}}
 {{- if .Values.certificates.cluster.enabled }}
@@ -864,6 +870,8 @@ the template that it itself is using form the above sections.
 
 {{- if and ( .Capabilities.APIVersions.Has "cert-manager.io/v1" ) .Values.certificates.enabled -}}
   {{- if (and .Values.certificates.cluster.enabled .Values.cluster.enabled) -}}
+    {{- $_ := set $autoEnv "KONG_CLUSTER_MTLS" "pki" -}}
+    {{- $_ := set $autoEnv "KONG_CLUSTER_SERVER_NAME" .Values.certificates.cluster.commonName -}}
     {{- $_ := set $autoEnv "KONG_CLUSTER_CA_CERT" "/etc/cert-manager/cluster/ca.crt" -}}
     {{- $_ := set $autoEnv "KONG_CLUSTER_CERT" "/etc/cert-manager/cluster/tls.crt" -}}
     {{- $_ := set $autoEnv "KONG_CLUSTER_CERT_KEY" "/etc/cert-manager/cluster/tls.key" -}}
@@ -1139,6 +1147,7 @@ role sets used in the charts. Updating these requires separating out cluster
 resource roles into their separate templates.
 */}}
 {{- define "kong.kubernetesRBACRules" -}}
+{{- if (semverCompare "< 2.10.0" (include "kong.effectiveVersion" .Values.ingressController.image)) }}
 - apiGroups:
   - ""
   resources:
@@ -1146,14 +1155,7 @@ resource roles into their separate templates.
   verbs:
   - list
   - watch
-- apiGroups:
-  - ""
-  resources:
-  - endpoints/status
-  verbs:
-  - get
-  - patch
-  - update
+{{- end }}
 - apiGroups:
   - ""
   resources:
@@ -1183,14 +1185,6 @@ resource roles into their separate templates.
   verbs:
   - list
   - watch
-- apiGroups:
-  - ""
-  resources:
-  - secrets/status
-  verbs:
-  - get
-  - patch
-  - update
 - apiGroups:
   - ""
   resources:
@@ -1485,6 +1479,15 @@ Kubernetes Cluster-scoped resources it uses to build Kong configuration.
   - get
   - patch
   - update
+{{- if (semverCompare ">= 2.10.0" (include "kong.effectiveVersion" .Values.ingressController.image)) }}
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  verbs:
+  - list
+  - watch
+{{- end }}
 {{- if or (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1alpha2") (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1beta1") }}
 - apiGroups:
   - gateway.networking.k8s.io

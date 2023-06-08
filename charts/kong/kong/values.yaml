@@ -121,10 +121,10 @@ extraLabels: {}
 # Specify Kong's Docker image and repository details here
 image:
   repository: kong
-  tag: "3.2"
+  tag: "3.3"
   # Kong Enterprise
   # repository: kong/kong-gateway
-  # tag: "3.2"
+  # tag: "3.3"
 
   pullPolicy: IfNotPresent
   ## Optionally specify an array of imagePullSecrets.
@@ -338,8 +338,10 @@ proxy:
     # TLS secret name.
     # tls: kong-proxy.example.com-tls
     hostname:
-    # Map of ingress annotations.
+    # To specify annotations or labels for the ingress, add them to the respective
+    # "annotations" or "labels" dictionaries below.
     annotations: {}
+    labels: {}
     # Ingress path.
     path: /
     # Each path in an Ingress is required to have a corresponding path type. (ImplementationSpecific/Exact/Prefix)
@@ -484,7 +486,7 @@ ingressController:
   enabled: true
   image:
     repository: kong/kubernetes-ingress-controller
-    tag: "2.9"
+    tag: "2.10"
     # Optionally set a semantic version for version-gated features. This can normally
     # be left unset. You only need to set this if your tag is not a semver string,
     # such as when you are using a "next" tag. Set this to the effective semantic
@@ -533,6 +535,7 @@ ingressController:
     port: 8080
     certificate:
       provided: false
+    namespaceSelector: {}
     # Specifiy the secretName when the certificate is provided via a TLS secret
     # secretName: ""
     # Specifiy the CA bundle of the provided certificate.
@@ -602,6 +605,10 @@ ingressController:
     # Specifies a secret that contains a client TLS certificate that the controller
     # will use to authenticate against Konnect APIs.
     tlsClientCertSecretName: "konnect-client-tls"
+
+    license:
+      # Specifies whether the controller should fetch a license from Konnect and apply it to managed Gateways.
+      enabled: false
 
   adminApi:
     tls:
@@ -723,8 +730,8 @@ certificates:
     # Issuers used by the control and data plane releases must match for this certificate.
     issuer: ""
     clusterIssuer: ""
-    # commonName: "kong_cluster"
-    # dnsNames: []
+    commonName: "kong_clustering"
+    dnsNames: []
 
 # -----------------------------------------------------------------------------
 # Miscellaneous parameters
@@ -784,6 +791,18 @@ livenessProbe:
   periodSeconds: 10
   successThreshold: 1
   failureThreshold: 3
+
+# startupProbe for Kong pods
+# startupProbe:
+#   httpGet:
+#     path: "/status"
+#     port: status
+#     scheme: HTTP
+#   initialDelaySeconds: 5
+#   timeoutSeconds: 5
+#   periodSeconds: 2
+#   successThreshold: 1
+#   failureThreshold: 40
 
 # Proxy container lifecycle hooks
 # Ref: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/

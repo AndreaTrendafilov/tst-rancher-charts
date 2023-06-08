@@ -1,5 +1,50 @@
 # Changelog
 
+## 2.23.0
+
+### Improvements
+
+* Add custom label configuration option for Kong proxy `Ingress`.
+  [#812](https://github.com/Kong/charts/pull/812)
+* Bump default `kong/kubernetes-ingress-controller` image tag to 2.10.
+  Bump default `kong` image tag to 3.3.
+  [#815](https://github.com/Kong/charts/pull/815)
+
+## 2.22.0
+
+### Improvements
+
+* Removed redundant RBAC permissions for non-existing subresources `secrets/status`
+  and `endpoints/status`.
+  [#798](https://github.com/Kong/charts/pull/798)
+* For Kong Ingress Controller in version >= 2.10, RBAC permissions for `Endpoints`
+  are not configured anymore (because it uses `EndpointSlices`).
+  [#798](https://github.com/Kong/charts/pull/798)
+* Added support for setting `certificates.cluster.commonName`. This allows a custom
+  certificate `CommonName` to be provided when deploying Kong Gateway in hybrid
+  mode using Cert Manager [#804](https://github.com/Kong/charts/pull/804)
+
+## 2.21.0
+
+### Improvements
+
+* Added support for `startupProbe` on Kong pods. This can be configured via
+  `.Values.startupProbe`. To maintain backward compatibility, it is disabled by default.
+  [#792](https://github.com/Kong/charts/pull/792)
+* Customize Admission Webhook namespaceSelectors and compose them from values.
+  [#794](https://github.com/Kong/charts/pull/794)
+* Added `CustomResourceDefinition` `list` and `watch` permissions to controller's ClusterRole.
+  [#796](https://github.com/Kong/charts/pull/796)
+
+## 2.20.2
+
+### Fixed 
+
+* Automatic license provisioning for Gateways managed by Ingress Controllers in Konnect mode
+  is disabled by default.
+  To enable it, set `.Values.ingressController.konnect.license.enabled=true`.
+  [#793](https://github.com/Kong/charts/pull/793)
+
 ## 2.20.1
 
 ### Fixed

@@ -105,6 +105,14 @@ Generate configuration needed for rpk
 {{- toJson (dict "bool" (and (dig "tls" "enabled" .Values.tls.enabled $listener) (not (empty (dig "tls" "cert" "" $listener))))) -}}
 {{- end -}}
 
+{{- define "admin-external-tls-enabled" -}}
+{{- toJson (dict "bool" (and (dig "tls" "enabled" (include "admin-internal-tls-enabled" . | fromJson).bool .listener) (not (empty (include "admin-external-tls-cert" .))))) -}}
+{{- end -}}
+
+{{- define "admin-external-tls-cert" -}}
+{{- dig "tls" "cert" .Values.listeners.admin.tls.cert .listener -}}
+{{- end -}}
+
 {{- define "kafka-internal-tls-enabled" -}}
 {{- $listener := .Values.listeners.kafka -}}
 {{- toJson (dict "bool" (and (dig "tls" "enabled" .Values.tls.enabled $listener) (not (empty (dig "tls" "cert" "" $listener))))) -}}
@@ -351,8 +359,12 @@ than 1 core.
   {{- end -}}
 {{- end -}}
 
-{{- define "api-urls" -}}
-{{ template "redpanda.fullname" . }}-0.{{ include "redpanda.internal.domain" .}}:{{ .Values.listeners.admin.port }}
+{{- define "admin-api-urls" -}}
+{{ printf "${SERVICE_NAME}.%s" (include "redpanda.internal.domain" .) }}:{{.Values.listeners.admin.port }}
+{{- end -}}
+
+{{- define "admin-api-service-url" -}}
+{{ include "redpanda.internal.domain" .}}:{{.Values.listeners.admin.port }}
 {{- end -}}
 
 {{- define "sasl-mechanism" -}}
@@ -362,7 +374,7 @@ than 1 core.
 {{- define "rpk-flags" -}}
   {{- $root := . -}}
   {{- $admin := list -}}
-  {{- $admin = concat $admin (list "--api-urls" (include "api-urls" . )) -}}
+  {{- $admin = concat $admin (list "--api-urls" (include "admin-api-urls" . )) -}}
   {{- if (include "admin-internal-tls-enabled" . | fromJson).bool -}}
     {{- $admin = concat $admin (list
       "--admin-api-tls-enabled"
@@ -413,6 +425,34 @@ than 1 core.
 {{- define "rpk-flags-no-sasl" -}}
 {{- $flags := fromJson (include "rpk-flags" .) -}}
 {{ join " " (list $flags.brokers $flags.admin $flags.kafka)}}
+{{- end -}}
+
+{{- define "rpk-flags-no-brokers-no-sasl" -}}
+{{- $flags := fromJson (include "rpk-flags" .) -}}
+{{ $flags.admin }}
+{{- end -}}
+
+{{- define "rpk-acl-user-flags" }}
+{{- $root := . -}}
+{{- $admin := list -}}
+  {{- $apiUrls := list -}}
+  {{- range $i := untilStep 0 (.Values.statefulset.replicas|int) 1 -}}
+    {{- $apiUrls = concat $apiUrls (list (printf "%s-%d.%s:%d"
+      (include "redpanda.fullname" $root)
+      $i
+      (include "redpanda.internal.domain" $root)
+      (int $root.Values.listeners.admin.port)))
+    -}}
+  {{- end -}}
+  {{- $admin = concat $admin (list "--api-urls" (join "," $apiUrls)) -}}
+  {{- if (include "admin-internal-tls-enabled" . | fromJson).bool -}}
+    {{- $admin = concat $admin (list
+      "--admin-api-tls-enabled"
+      "--admin-api-tls-truststore"
+      (printf "/etc/tls/certs/%s/ca.crt" .Values.listeners.admin.tls.cert))
+    -}}
+  {{- end -}}
+{{ join " " $admin }}
 {{- end -}}
 
 {{- define "rpk-flags-no-admin-no-sasl" -}}
@@ -480,22 +520,22 @@ than 1 core.
 {{- end -}}
 
 {{- define "redpanda-atleast-22-2-0" -}}
-{{- toJson (dict "bool" (or (not (eq .Values.image.repository "vectorized/redpanda")) (include "redpanda.semver" . | semverCompare ">=22.2.0"))) -}}
+{{- toJson (dict "bool" (or (not (eq .Values.image.repository "docker.redpanda.com/redpandadata/redpanda")) (include "redpanda.semver" . | semverCompare ">=22.2.0-0 || <0.0.1-0"))) -}}
 {{- end -}}
 {{- define "redpanda-atleast-22-3-0" -}}
-{{- toJson (dict "bool" (or (not (eq .Values.image.repository "vectorized/redpanda")) (include "redpanda.semver" . | semverCompare ">=22.3.0"))) -}}
+{{- toJson (dict "bool" (or (not (eq .Values.image.repository "docker.redpanda.com/redpandadata/redpanda")) (include "redpanda.semver" . | semverCompare ">=22.3.0-0 || <0.0.1-0"))) -}}
 {{- end -}}
 {{- define "redpanda-atleast-23-1-1" -}}
-{{- toJson (dict "bool" (or (not (eq .Values.image.repository "vectorized/redpanda")) (include "redpanda.semver" . | semverCompare ">=23.1.1"))) -}}
+{{- toJson (dict "bool" (or (not (eq .Values.image.repository "docker.redpanda.com/redpandadata/redpanda")) (include "redpanda.semver" . | semverCompare ">=23.1.1-0 || <0.0.1-0"))) -}}
 {{- end -}}
 {{- define "redpanda-atleast-23-1-2" -}}
-{{- toJson (dict "bool" (or (not (eq .Values.image.repository "vectorized/redpanda")) (include "redpanda.semver" . | semverCompare ">=23.1.2"))) -}}
+{{- toJson (dict "bool" (or (not (eq .Values.image.repository "docker.redpanda.com/redpandadata/redpanda")) (include "redpanda.semver" . | semverCompare ">=23.1.2-0 || <0.0.1-0"))) -}}
 {{- end -}}
 {{- define "redpanda-22-3-atleast-22-3-13" -}}
-{{- toJson (dict "bool" (or (not (eq .Values.image.repository "vectorized/redpanda")) (include "redpanda.semver" . | semverCompare ">=22.3.13,<22.4"))) -}}
+{{- toJson (dict "bool" (or (not (eq .Values.image.repository "docker.redpanda.com/redpandadata/redpanda")) (include "redpanda.semver" . | semverCompare ">=22.3.13-0,<22.4"))) -}}
 {{- end -}}
 {{- define "redpanda-22-2-atleast-22-2-10" -}}
-{{- toJson (dict "bool" (or (not (eq .Values.image.repository "vectorized/redpanda")) (include "redpanda.semver" . | semverCompare ">=22.2.10,<22.3"))) -}}
+{{- toJson (dict "bool" (or (not (eq .Values.image.repository "docker.redpanda.com/redpandadata/redpanda")) (include "redpanda.semver" . | semverCompare ">=22.2.10-0,<22.3"))) -}}
 {{- end -}}
 
 # manage backward compatibility with renaming podSecurityContext to securityContext

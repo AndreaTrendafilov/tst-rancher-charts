@@ -336,6 +336,9 @@ first and then upgrade the data plane release](https://docs.konghq.com/gateway/l
 
 #### Certificates
 
+> This example shows how to use Kong Hybrid mode with `cluster_mtls: shared`.
+> For an example of `cluster_mtls: pki` see the [hybrid-cert-manager example](https://github.com/Kong/charts/blob/main/charts/kong/example-values/hybrid-cert-manager/)
+
 Hybrid mode uses TLS to secure the CP/DP node communication channel, and
 requires certificates for it. You can generate these either using `kong hybrid
 gen_cert` on a local Kong installation or using OpenSSL:
@@ -432,7 +435,7 @@ admin:
 ```yaml
 env:
   role: data_plane
-  database: off
+  database: "off"
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
   lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
@@ -681,6 +684,7 @@ or `ingress` sections, as it is used only for stream listens.
 | SVC.ingress.path                   | Ingress path.                                                                         | `/`                      |
 | SVC.ingress.pathType               | Ingress pathType. One of `ImplementationSpecific`, `Exact` or `Prefix`                | `ImplementationSpecific` |
 | SVC.ingress.annotations            | Ingress annotations. See documentation for your ingress controller for details        | `{}`                     |
+| SVC.ingress.labels                 | Ingress labels. Additional custom labels to add to the ingress.                       | `{}`                     |
 | SVC.annotations                    | Service annotations                                                                   | `{}`                     |
 | SVC.labels                         | Service labels                                                                        | `{}`                     |
 
@@ -736,6 +740,7 @@ section of `values.yaml` file:
 | admissionWebhook.certificate.provided      | Use a provided certificate. When set to false, the chart will automatically generate a certificate.                                                      | false                              |
 | admissionWebhook.certificate.secretName    | Name of the TLS secret for the provided webhook certificate                                                                                              |                                    |
 | admissionWebhook.certificate.caBundle      | PEM encoded CA bundle which will be used to validate the provided webhook certificate                                                                    |                                    |
+| admissionWebhook.namespaceSelector         | Add namespaceSelector to the webhook. Please go to [Kubernetes doc for the specs](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector)                                                                          |                                    |
 | userDefinedVolumes                         | Create volumes. Please go to Kubernetes doc for the spec of the volumes                                                                                  |                                    |
 | userDefinedVolumeMounts                    | Create volumeMounts. Please go to Kubernetes doc for the spec of the volumeMounts                                                                        |                                    |
 | terminationGracePeriodSeconds              | Sets the [termination grace period](https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#hook-handler-execution) for Deployment pod | 30                                 |
@@ -746,6 +751,7 @@ section of `values.yaml` file:
 | konnect.runtimeGroupID                     | Konnect Runtime Group's unique identifier.                                                                                                               |                                    |
 | konnect.apiHostname                        | Konnect API hostname. Defaults to a production US-region.                                                                                                | us.kic.api.konghq.com              |
 | konnect.tlsClientCertSecretName            | Name of the secret that contains Konnect Runtime Group's client TLS certificate.                                                                         | konnect-client-tls                 |
+| konnect.license.enabled                    | Enable automatic license provisioning for Gateways managed by Ingress Controller in Konnect mode.                                                        | false                              |
 | adminApi.tls.client.enabled                | Enable TLS client verification for the Admin API. By default, Helm will generate certificates automatically.                                             | false                              |
 | adminApi.tls.client.certProvided           | Use user-provided certificates. If set to false, Helm will generate certificates.                                                                        | false                              |
 | adminApi.tls.client.secretName             | Client TLS certificate/key pair secret name. Can be also set when `certProvided` is false to enforce a generated secret's name.                          | ""                                 |
@@ -839,6 +845,7 @@ On the Gateway release side, set either `admin.tls.client.secretName` to the nam
 | updateStrategy                     | update strategy for deployment                                                        | `{}`                |
 | readinessProbe                     | Kong readiness probe                                                                  |                     |
 | livenessProbe                      | Kong liveness probe                                                                   |                     |
+| startupProbe                       | Kong startup probe                                                                    |                     |
 | lifecycle                          | Proxy container lifecycle hooks                                                       | see `values.yaml`   |
 | terminationGracePeriodSeconds      | Sets the [termination grace period](https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#hook-handler-execution) for Deployment pods | 30                  |
 | affinity                           | Node/pod affinities                                                                   |                     |

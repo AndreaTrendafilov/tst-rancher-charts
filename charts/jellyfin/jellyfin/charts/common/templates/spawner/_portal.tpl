@@ -70,11 +70,19 @@
         {{- end }}
 
         {{/* Get the port for the ingress entrypoint */}}
-        {{- $namespace := "tc-system" }}
+
+
+        {{- $traefikNamespace := "tc-system" -}}
+        {{- if $.Values.operator.traefik -}}
+          {{- if $.Values.operator.traefik.namespace -}}
+            {{- $traefikNamespace := $.Values.operator.traefik.namespace -}}
+          {{- end -}}
+        {{- end -}}
         {{- if $selectedIngress.ingressClassName }}
-        {{- $namespace := ( printf "ix-%s" $selectedIngress.ingressClassName ) }}
-        {{- end }}
-        {{- $traefikportalhook := lookup "v1" "ConfigMap" $namespace "portalhook" }}
+          {{- $traefikNamespace = (printf "ix-%s" $selectedIngress.ingressClassName) -}}
+        {{- end -}}
+
+        {{- $traefikportalhook := lookup "v1" "ConfigMap" $traefikNamespace "portalhook" }}
 
         {{- $entrypoint := "websecure" }}
         {{- $protocol = "https" -}}

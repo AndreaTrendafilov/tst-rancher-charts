@@ -60,6 +60,8 @@ It will include / inject the required templates based on the given values.
         {{- $_ := set $workload.podSpec.containers "vpn" $container -}}
       {{- end -}}
     {{- else if eq "tailscale" $.Values.addons.vpn.type -}}
+      {{/* FIXME: https://github.com/tailscale/tailscale/issues/8188 */}}
+      {{- $_ := set $.Values.podOptions "automountServiceAccountToken" true -}}
       {{- $container := include "tc.v1.common.addon.vpn.tailscale.container" $ | fromYaml -}}
       {{- if $container -}}
         {{- $workload := get $.Values.workload . -}}
@@ -81,13 +83,12 @@ It will include / inject the required templates based on the given values.
   {{- end -}}
 
   {{- if eq "tailscale" $.Values.addons.vpn.type -}}
-  {{/* Append the empty tailscale folder to the persistence */}}
-  {{- $tailscaleper := include "tc.v1.common.addon.vpn.volume.tailscale" . | fromYaml -}}
-  {{- if $tailscaleper -}}
-    {{- $_ := set .Values.persistence "tailscalestate" $tailscaleper -}}
+    {{/* Append the empty tailscale folder to the persistence */}}
+    {{- $tailscaledir := include "tc.v1.common.addon.vpn.volume.tailscale" . | fromYaml -}}
+    {{- if $tailscaledir -}}
+      {{- $_ := set .Values.persistence "tailscalestate" $tailscaledir -}}
+    {{- end -}}
   {{- end -}}
-  {{- end -}}
-
 
 {{- end -}}
 {{- end -}}

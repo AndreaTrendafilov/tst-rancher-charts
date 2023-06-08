@@ -34,12 +34,7 @@
             }
         },
         "console": {
-            "type": "object",
-            "properties": {
-                "config": {
-                    "type": "object"
-                }
-            }
+            "type": "object"
         },
         "deployment": {
             "type": "object",
@@ -159,6 +154,9 @@
         "nodeSelector": {
             "type": "object"
         },
+        "annotations": {
+            "type": "object"
+        },
         "podAnnotations": {
             "type": "object"
         },
@@ -214,6 +212,9 @@
                 "login": {
                     "type": "object",
                     "properties": {
+                        "jwtSecret": {
+                            "type": "string"
+                        },
                         "github": {
                             "type": "object"
                         },

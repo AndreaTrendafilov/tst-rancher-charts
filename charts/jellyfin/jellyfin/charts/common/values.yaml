@@ -10,6 +10,9 @@ global:
   addTraefikAnnotations: true
   # -- Minimum nodePort value
   minNodePort: 9000
+  # -- Enable to stop most pods and containers including cnpg
+  # does not include stand-alone pods
+  stopAll: false
 
 fallbackDefaults:
   # -- Define a storageClassName that will be used for all PVCs
@@ -121,12 +124,14 @@ containerOptions:
 podOptions:
   enableServiceLinks: false
   hostNetwork: false
+  hostPID: false
+  shareProcessNamespace: false
   restartPolicy: Always
   dnsPolicy: ClusterFirst
   dnsConfig:
     options:
       - name: ndots
-        value: "2"
+        value: "1"
   hostAliases: []
   nodeSelector: {}
   tolerations: []
@@ -160,7 +165,7 @@ workload:
               port: "{{ $.Values.service.main.ports.main.targetPort | default .Values.service.main.ports.main.port }}"
             startup:
               enabled: true
-              type: "{{ .Values.service.main.ports.main.protocol }}"
+              type: "tcp"
               port: "{{ $.Values.service.main.ports.main.targetPort | default .Values.service.main.ports.main.port }}"
 
 # -- Timezone used everywhere applicable
@@ -307,6 +312,9 @@ APPURL: ""
 manifestManager:
   enabled: true
   staging: false
+  install: true
+  check: true
+  delete: false
 
 gluetunImage:
   repository: tccr.io/truecharts/gluetun
@@ -315,27 +323,27 @@ gluetunImage:
 
 netshootImage:
   repository: tccr.io/truecharts/netshoot
-  tag: 0.10.0@sha256:186455559f6e5e97f4906d662c476a0521265d6d8d4df93038955463e2b91f5d
+  tag: v0.11.0@sha256:e6a26284531b240865a0b31d1c8835e8ee1862799c816014e4c59c1401abe1c5
   pullPolicy: IfNotPresent
 
 tailscaleImage:
   repository: tccr.io/truecharts/tailscale
-  tag: 1.40.0@sha256:a5daed1342393e1b659eb6b3f893d8a729eec7eb6f517ea55e7c57993e2d9515
+  tag: v1.42.0@sha256:d29d3f96acd24c14c231da4d28de5f77744d605151c39609d5bdf4245a157c39
   pullPolicy: IfNotPresent
 
 codeserverImage:
   repository: tccr.io/truecharts/code-server
-  tag: 4.12.0@sha256:d3f88ccfea90f93f38d97f8bfd8d7595c56fc57c69fe8cd5d28d42aca1a06eff
+  tag: v4.13.0@sha256:3eae79348586a725993cc26bc71b5ba20736f93e78f735e8c51fa63e75f5fcae
   pullPolicy: IfNotPresent
 
 alpineImage:
   repository: tccr.io/truecharts/alpine
-  tag: 3.17.3@sha256:87cedff1fd48b702111570f675252de4056305b352bb9559922fc0e3e55022eb
+  tag: v3.18.0@sha256:2042d13cae39c99cbac39447b686e7ad34509e32424efdf3ff9e2b324b6e6b34
   pullPolicy: IfNotPresent
 
 scratchImage:
   repository: tccr.io/truecharts/scratch
-  tag: latest@sha256:5cbd927dfbc050b0e0f5ca675b299b75fb8d8f6c8f49fa8640b6a67d347cbf19
+  tag: latest@sha256:9dd0f68d32ace452a3a75273bd8e3a074d0a14e4d38683389c73887432832fc3
   pullPolicy: IfNotPresent
 
 kubectlImage:
@@ -549,6 +557,29 @@ metrics:
         #   # list to support adding rules via the SCALE GUI without overwrithing the rules
         #   additionalrules: []
 
+# -- Contains specific settings for helm charts containing or using operators
+operator:
+  # -- Adds a configmap to the operator to register this chart as an operator
+  register: false
+  # -- Verified wether required operators for this chart are actually installed and registered
+  verify:
+    enabled: true
+    # -- Makes non-found operators hard-failing
+    ## TODO: set to true
+    failOnError: false
+    # -- a list of extra operators to check for
+    additionalOperators: []
+  ## -- used as a datastore when a metallb operator is found.
+  # metallb: {}
+  ## -- used as a datastore when a traefik operator is found.
+  # traefik: {}
+  ## -- used as a datastore when a prometheus operator is found.
+  # prometheus: {}
+  ## -- used as a datastore when a cloudnative-pg operator is found.
+  # cloudnative-pg: {}
+  ## -- used as a datastore when a cert-manager operator is found.
+  # cert-manager: {}
+
 # -- The common chart supports several add-ons. These can be configured under this key.
 # @default -- See below
 addons:
@@ -705,6 +736,8 @@ cnpg:
   main:
     enabled: false
     primary: true
+    # -- Puts the cnpg cluster in hibernation mode
+    hibernate: false
     # -- number of instances for both postgres and pgbouncer
     instances: 2
     database: "app"
@@ -724,6 +757,7 @@ cnpg:
     storage:
       size: "256Gi"
       walsize: "256Gi"
+    # -- Gets scaled to 0 if hibernation is true
     pooler:
       instances: 2
     # -- set to enable prometheus metrics
@@ -788,3 +822,6 @@ solr:
   creds: {}
   manifestManager:
     enabled: false
+
+# -- List of extra objects to deploy with the release
+extraTpl: []

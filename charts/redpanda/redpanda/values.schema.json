@@ -33,7 +33,7 @@
       "properties": {
         "repository": {
           "description": "container image repository",
-          "default": "vectorized/redpanda",
+          "default": "docker.redpanda.com/redpandadata/redpanda",
           "type": "string",
           "pattern": "^[a-z0-9-_/.]+$"
         },
@@ -194,6 +194,17 @@
         },
         "annotations": {
           "type": "object"
+        },
+        "externalDns": {
+          "type": "object",
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -218,6 +229,25 @@
               "type": "boolean"
             }
           }
+        }
+      }
+    },
+    "monitoring": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "scrapeInterval"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "scrapeInterval": {
+          "type": "string",
+          "pattern": ".*[smh]$"
+        },
+        "labels": {
+          "type": "object"
         }
       }
     },
@@ -510,7 +540,8 @@
         "priorityClassName",
         "tolerations",
         "topologySpreadConstraints",
-        "securityContext"
+        "securityContext",
+        "sideCars"
       ],
       "properties": {
         "replicas": {
@@ -668,6 +699,22 @@
             "fsGroupChangePolicy": {
               "type": "string",
               "pattern": "^(OnRootMismatch|Always)$"
+            }
+          }
+        },
+        "sideCars": {
+          "type": "object",
+          "properties": {
+            "configWatcher": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "resources": {
+                  "type": "object"
+                }
+              }
             }
           }
         },
@@ -871,6 +918,10 @@
                       "items": {
                         "type": "integer"
                       }
+                    },
+                    "authenticationMethod": {
+                      "type": ["string", "null"],
+                      "pattern": "sasl|none|mtls_identity"
                     }
                   }
                 }
@@ -893,6 +944,10 @@
                   "type": "boolean"
                 }
               }
+            },
+            "authenticationMethod": {
+              "type": ["string", "null"],
+              "pattern": "sasl|none|mtls_identity"
             }
           }
         },
@@ -916,6 +971,10 @@
               "type": "string",
               "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
             },
+            "authenticationMethod": {
+              "type": ["string", "null"],
+              "pattern": "http_basic|none"
+            },
             "external": {
               "type": "object",
               "minProperties": 1,
@@ -938,6 +997,10 @@
                       "items": {
                         "type": "integer"
                       }
+                    },
+                    "authenticationMethod": {
+                      "type": ["string", "null"],
+                      "pattern": "http_basic|none"
                     }
                   }
                 }
@@ -1013,6 +1076,10 @@
               "type": "string",
               "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
             },
+            "authenticationMethod": {
+              "type": ["string", "null"],
+              "pattern": "http_basic|none"
+            },
             "external": {
               "type": "object",
               "minProperties": 1,
@@ -1032,6 +1099,10 @@
                       "items": {
                         "type": "integer"
                       }
+                    },
+                    "authenticationMethod": {
+                      "type": ["string", "null"],
+                      "pattern": "http_basic|none"
                     }
                   }
                 }

@@ -11,7 +11,7 @@ appVersion: 10.8.10
 dependencies:
 - name: common
   repository: file://./charts/common
-  version: 12.6.6
+  version: 12.13.0
 description: Jellyfin is a Free Software Media System
 home: https://truecharts.org/charts/stable/jellyfin
 icon: https://truecharts.org/img/hotlink-ok/chart-icons/jellyfin.png
@@ -29,4 +29,4 @@ sources:
 - https://github.com/truecharts/charts/tree/master/charts/stable/jellyfin
 - https://github.com/jellyfin/jellyfin
 type: application
-version: 14.0.13
+version: 14.0.22

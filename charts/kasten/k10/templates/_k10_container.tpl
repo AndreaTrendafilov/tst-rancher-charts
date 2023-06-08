@@ -75,6 +75,10 @@ stating that types are not same for the equality check
           initialDelaySeconds: 3
 {{- end }}
         env:
+{{- if eq $service "dashboardbff" }}
+          - name: {{ include "k10.disabledServicesEnvVar" . }}
+            value: {{ include "get.disabledServices" . | quote }}
+{{- end -}}
 {{- if eq (include "check.googlecreds" .) "true" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: "/var/run/secrets/kasten.io/kasten-gke-sa.json"
@@ -253,11 +257,30 @@ stating that types are not same for the equality check
             value: {{ (include "get.k10ImageTag" .) | print .Values.global.image.registry "/datamover:" }}
             {{- end }}{{/* if .Values.global.airgapped.repository */}}
 
+          - name: K10_KANISTER_POD_METRICS_IMAGE
+            {{- if .Values.global.airgapped.repository }}
+            value: {{ (include "get.k10ImageTag" .)  | print .Values.global.airgapped.repository "/metric-sidecar:" }}
+            {{- else }}
+            value: {{ (include "get.k10ImageTag" .) | print .Values.global.image.registry "/metric-sidecar:" }}
+            {{- end }}{{/* if .Values.global.airgapped.repository */}}
+
           - name: KANISTER_POD_READY_WAIT_TIMEOUT
             valueFrom:
               configMapKeyRef:
                 name: k10-config
                 key: KanisterPodReadyWaitTimeout
+
+          - name: K10_KANISTER_POD_METRICS_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: k10-config
+                key: KanisterPodMetricSidecarEnabled
+          - name: PUSHGATEWAY_METRICS_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: k10-config
+                key: KanisterPodPushgatewayMetricsInterval
+
 {{- end }}
           - name: LOG_LEVEL
             valueFrom:
@@ -425,6 +448,11 @@ stating that types are not same for the equality check
               configMapKeyRef:
                 name: k10-config
                 key: KanisterEFSPostRestoreTimeout
+          - name: K10_JOB_MAX_WAIT_DURATION
+            valueFrom:
+              configMapKeyRef:
+                name: k10-config
+                key: k10JobMaxWaitDuration
 {{- end }}
 {{- if and (eq $service "executor") (.Values.awsConfig.efsBackupVaultName) }}
           - name: EFS_BACKUP_VAULT_NAME
@@ -476,6 +504,12 @@ stating that types are not same for the equality check
               configMapKeyRef:
                 name: k10-config
                 key: kanisterFunctionVersion
+{{- if and (eq $service "controllermanager") (.Values.global.airgapped.repository) }}
+          - name: K10_AIRGAPPED_INSTALL
+            value: "true"
+          - name: K10_IMAGE_PULL_SECRET
+            value: {{ .Values.global.imagePullSecret }}  
+{{- end }}
 {{- if and (eq $service "controllermanager") (.Values.injectKanisterSidecar.enabled) }}
           - name: K10_MUTATING_WEBHOOK_ENABLED
             value: "true"

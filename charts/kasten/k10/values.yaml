@@ -89,6 +89,7 @@ global:
     upgrade: ''
     vbrintegrationapi: ''
     garbagecollector: ''
+    metric-sidecar: ''
   imagePullSecret: ''
   ingress:
     create: false
@@ -381,6 +382,11 @@ kanisterPodCustomLabels : ""
 
 kanisterPodCustomAnnotations : ""
 
+kanisterPodMetricSidecar:
+  enabled: false
+  metricLifetime: "2m"
+  pushGatewayInterval: "30s"
+
 genericVolumeSnapshot:
   resources:
     requests:
@@ -486,3 +492,8 @@ vault:
 kubeVirtVMs:
   snapshot:
     unfreezeTimeout: "5m"
+
+reporting:
+  pdfReports: true
+
+maxJobWaitDuration: ""
