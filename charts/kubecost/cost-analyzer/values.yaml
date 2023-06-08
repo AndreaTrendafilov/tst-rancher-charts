@@ -294,7 +294,7 @@ systemProxy:
 # - name: "image-pull-secret"
 
 kubecostFrontend:
-  image: "gcr.io/kubecost1/frontend"
+  image: 
   imagePullPolicy: Always
   # extraEnv:
   # - name: NGINX_ENTRYPOINT_WORKER_PROCESSES_AUTOTUNE
