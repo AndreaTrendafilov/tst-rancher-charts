@@ -1,6 +1,0 @@
-HelmRepo: https://charts.loft.sh
-HelmChart: loft
-Vendor: Loft
-DisplayName: Loft
-ChartMetadata:
-  kubeVersion: '>=1.22-0'

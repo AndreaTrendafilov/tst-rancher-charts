@@ -1,6 +1,0 @@
-HelmRepo: https://kubecost.github.io/cost-analyzer
-HelmChart: cost-analyzer 
-Vendor: Kubecost
-DisplayName: Kubecost
-ChartMetadata:
-  icon: https://partner-charts.rancher.io/assets/logos/kubecost.png

@@ -1,4 +1,0 @@
-HelmRepo: https://citrix.github.io/citrix-helm-charts
-HelmChart: citrix-cpx-istio-sidecar-injector
-Vendor: Citrix
-DisplayName: Citrix Cpx Istio Sidecar Injector

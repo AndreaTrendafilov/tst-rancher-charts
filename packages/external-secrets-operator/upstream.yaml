@@ -1,4 +1,0 @@
-HelmRepo: https://charts.external-secrets.io
-HelmChart: external-secrets
-Vendor: External Secrets
-DisplayName: External Secrets Operator

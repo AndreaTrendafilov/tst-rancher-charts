@@ -1,4 +1,0 @@
-HelmRepo: https://crowdstrike.github.io/falcon-helm/
-HelmChart: falcon-sensor
-Vendor: CrowdStrike
-DisplayName: CrowdStrike Falcon Platform

@@ -1,4 +1,0 @@
-HelmRepo: https://quobyte.github.io/quobyte-k8s-resources/helm-charts
-HelmChart: quobyte-cluster
-Vendor: Quobyte
-DisplayName: Quobyte

@@ -1,7 +1,0 @@
-HelmRepo: https://operator.min.io
-HelmChart: operator
-Vendor: Minio
-DisplayName: Minio Operator
-ChartMetadata:
-  name: minio-operator
-  kubeVersion: '>=1.19-0'

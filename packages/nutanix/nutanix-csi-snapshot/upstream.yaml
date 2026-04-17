@@ -1,4 +1,0 @@
-HelmRepo: https://nutanix.github.io/helm
-HelmChart: nutanix-csi-snapshot
-Vendor: Nutanix
-DisplayName: Nutanix CSI Snapshot

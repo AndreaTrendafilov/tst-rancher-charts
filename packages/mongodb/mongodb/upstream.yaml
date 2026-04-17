@@ -1,4 +1,0 @@
-HelmRepo: https://mongodb.github.io/helm-charts
-HelmChart: community-operator
-Vendor: MongoDB 
-DisplayName: MongoDB Community Operator

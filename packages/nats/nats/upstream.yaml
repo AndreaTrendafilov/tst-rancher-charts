@@ -1,5 +1,0 @@
-HelmRepo: https://nats-io.github.io/k8s/helm/charts
-HelmChart: nats
-DisplayName: NATS Server
-ChartMetadata:
-  kubeVersion: '>=1.16-0'

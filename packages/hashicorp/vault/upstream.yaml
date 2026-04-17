@@ -1,4 +1,0 @@
-HelmRepo: https://helm.releases.hashicorp.com
-HelmChart: vault
-Vendor: Hashicorp
-DisplayName: Hashicorp Vault

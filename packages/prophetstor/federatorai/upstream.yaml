@@ -1,4 +1,0 @@
-HelmRepo: https://prophetstor-ai.github.io/federatorai-operator-helm
-HelmChart: federatorai
-Vendor: ProphetStor
-DisplayName: Federator.ai

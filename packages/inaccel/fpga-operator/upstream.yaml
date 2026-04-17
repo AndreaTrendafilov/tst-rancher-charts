@@ -1,5 +1,0 @@
-HelmRepo: https://setup.inaccel.com/helm
-HelmChart: fpga-operator
-Vendor: InAccel
-DisplayName: InAccel FPGA Operator
-Namespace: kube-system

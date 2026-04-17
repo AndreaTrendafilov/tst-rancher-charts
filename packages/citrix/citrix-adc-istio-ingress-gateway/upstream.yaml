@@ -1,4 +1,0 @@
-HelmRepo: https://citrix.github.io/citrix-helm-charts
-HelmChart: citrix-adc-istio-ingress-gateway
-Vendor: Citrix
-DisplayName: Citrix Adc Istio Ingress Gateway

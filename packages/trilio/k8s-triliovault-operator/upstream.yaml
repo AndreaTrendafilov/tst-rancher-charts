@@ -1,4 +1,0 @@
-HelmRepo: https://charts.k8strilio.net/trilio-stable/k8s-triliovault-operator
-HelmChart: k8s-triliovault-operator
-Vendor: Trilio
-DisplayName: TrilioVault for Kubernetes Operator

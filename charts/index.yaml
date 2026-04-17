@@ -1,0 +1,22 @@
+apiVersion: v1
+entries:
+  migrations-operator:
+  - annotations:
+      helm.sh/resource-policy: keep
+    apiVersion: v2
+    appVersion: 1.2.5
+    created: "2026-04-17T14:42:25.972010169+03:00"
+    description: Kubernetes operator to manage database migrations
+    digest: 3fa7439837f4dde7c63799b6671f4d65042cae8060420fa19b5e6ef196fdf950
+    home: https://github.com/AndreaTrendafilov/migrations-operator
+    kubeVersion: '>= 1.24.0-0'
+    maintainers:
+    - name: Andrea Trendafilov
+    name: migrations-operator
+    sources:
+    - https://github.com/AndreaTrendafilov/migrations-operator
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/AndreaTrendafilov/tst-rancher-charts/main/charts/migrations-operator-1.0.1.tgz
+    version: 1.0.1
+generated: "2026-04-17T14:42:25.971099418+03:00"
