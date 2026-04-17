@@ -1,28 +1,7 @@
-# tst-rancher-charts
+# tst-rancher-charts (archived layout)
 
-Personal Helm chart repository. Charts are packaged under `charts/`; source lives in `chart-sources/`.
+This repository was trimmed to a minimal Helm layout and has been superseded by **[naphtha-charts](https://github.com/AndreaTrendafilov/naphtha-charts)**.
 
-## Use this repo with Helm
+Use the Helm repository at **`https://naphtha.dev/charts`** (see that repo’s `README.md`).
 
-```bash
-helm repo add tst-rancher-charts https://raw.githubusercontent.com/AndreaTrendafilov/tst-rancher-charts/main/charts
-helm repo update
-helm search repo tst-rancher-charts
-helm install migrations-operator tst-rancher-charts/migrations-operator --namespace migrations-system --create-namespace
-```
-
-## Add or update a chart
-
-1. Edit the chart under `chart-sources/<name>/`.
-2. Package and refresh the index:
-
-```bash
-helm package chart-sources/migrations-operator -d charts
-helm repo index charts --url https://raw.githubusercontent.com/AndreaTrendafilov/tst-rancher-charts/main/charts
-```
-
-3. Commit `chart-sources/`, `charts/*.tgz`, and `charts/index.yaml`.
-
-## Default image
-
-The migrations-operator chart defaults to `ghcr.io/andreatrendafilov/migrations-operator:v1.2.5`.
+The last minimal commit here used `charts/` + `chart-sources/` on `main`; prefer **naphtha-charts** for new work.
