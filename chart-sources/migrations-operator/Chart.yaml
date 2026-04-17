@@ -1,0 +1,21 @@
+apiVersion: v2
+name: migrations-operator
+description: Kubernetes operator to manage database migrations
+type: application
+version: 1.0.1
+appVersion: "1.2.5"
+kubeVersion: '>= 1.24.0-0'
+home: https://github.com/AndreaTrendafilov/migrations-operator
+sources:
+  - https://github.com/AndreaTrendafilov/migrations-operator
+maintainers:
+  - name: Andrea Trendafilov
+annotations:
+  catalog.cattle.io/certified: partner
+  catalog.cattle.io/display-name: Migrations Operator
+  catalog.cattle.io/kube-version: '>= 1.24.0-0'
+  catalog.cattle.io/release-name: migrations-operator
+  # CRDs are automatically installed from crds/ directory
+  # Helm installs CRDs before any other resources
+  # ArgoCD handles them with Replace=true to avoid deletion
+  helm.sh/resource-policy: keep

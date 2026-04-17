@@ -23402,6 +23402,28 @@ entries:
     urls:
     - assets/metallb/metallb-0.13.7.tgz
     version: 0.13.7
+  migrations-operator:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: Migrations Operator
+      catalog.cattle.io/kube-version: '>= 1.24.0-0'
+      catalog.cattle.io/release-name: migrations-operator
+    apiVersion: v2
+    appVersion: 1.2.5
+    created: "2026-04-17T14:30:24Z"
+    description: Kubernetes operator to manage database migrations
+    digest: 4cf3cd48abccc42d2e910348bd120a5a801c1eb796fcdb2cd7978c0c3e3e6da2
+    home: https://github.com/AndreaTrendafilov/migrations-operator
+    kubeVersion: '>= 1.24.0-0'
+    maintainers:
+    - name: Andrea Trendafilov
+    name: migrations-operator
+    sources:
+    - https://github.com/AndreaTrendafilov/migrations-operator
+    type: application
+    urls:
+    - assets/andreat/migrations-operator-1.0.1.tgz
+    version: 1.0.1
   minio-operator:
   - annotations:
       catalog.cattle.io/certified: partner
